@@ -5,6 +5,8 @@ from utilities import *
 def getAllData(cityList):
     gmapsDist = readGoogleAPI()
     allData = dict()
+    maxDist = 0
+    maxTime = 0
     for city1 in cityList:
         allData[city1] = dict()
         print city1
@@ -15,8 +17,14 @@ def getAllData(cityList):
             if d['rows'][0]['elements'][0]['status'] == 'OK':
                 dists[city2] = d['rows'][0]['elements'][0]['distance']['value']
                 times[city2] = d['rows'][0]['elements'][0]['duration']['value']
+        maxDist = max(maxDist, max(dists.values()))
+        maxTime = max(maxTime, max(times.values()))
         allData[city1]['distances'] = dists
         allData[city1]['durations'] = times
+    for city1 in cityList:
+        for city2 in allData[city1]['distances'].keys():
+            allData[city1]['distances'][city2] /= float(maxDist)
+            allData[city1]['durations'][city2] /= float(maxTime)
     return allData
 
 def main():
